@@ -1,0 +1,168 @@
+Node Classification: 
+=== Stage 1: learning ['and', 'or'] ===
+=== Stage 2: learning ['nand', 'nor'] ===
+=== Stage 3: learning ['xor', 'xnor'] ===
+=== Stage 4: learning ['not', 'buf'] ===
+
+
+Parameter Regularization: EWC
+
+=== Test accuracies per stage & group ===
+      group_1 group_2 group_3 group_4
+Stage                                
+1      72.65%    nan%    nan%    nan%
+2      41.61%  46.92%    nan%    nan%
+3      43.45%  47.20%  68.00%    nan%
+4      72.61%  25.14%  68.00%  83.74%
+
+=== EWC Interpretability: Drift vs Forgetting ===
+  from_to  param_drift  ewc_drift  delta_acc
+0     1→2     7.312001   0.000149   0.310406
+1     1→3     9.679255   0.000159   0.291972
+2     2→3     5.851059   0.000054  -0.002804
+3     1→4     9.930671   0.000149   0.000396
+4     2→4     7.207619   0.000086   0.217757
+5     3→4     4.193052   0.000002   0.000000
+
+Correlation (param drift vs ΔAcc): 0.3740
+Correlation (ewc drift   vs ΔAcc): 0.6096
+
+
+Parameter Regularization: SI
+=== Test accuracies per stage & group ===
+      group_1 group_2  group_3 group_4
+Stage                                 
+1      72.90%    nan%     nan%    nan%
+2      72.90%   8.22%     nan%    nan%
+3      51.77%  14.95%  100.00%    nan%
+4       9.18%  15.14%   32.00%  53.17%
+
+=== SI Interpretability: Drift vs Forgetting ===
+  from_to  param_drift   si_drift  delta_acc
+0     1→2     2.149134  -0.000320   0.000000
+1     1→3    17.742040   1.680352   0.211298
+2     2→3    17.557760  -0.896844  -0.067290
+3     1→4    24.167522   3.648412   0.637265
+4     2→4    24.042354   3.172229  -0.069159
+5     3→4    16.448309 -19.025906   0.680000
+
+Correlation (param drift vs ΔAcc):        0.2732
+Correlation (SI-weighted drift vs ΔAcc):  -0.5234
+
+
+
+Replay-based Methods (a.k.a. Experience Replay):iCaRL (Incremental Classifier and Representation Learning)
+=== Test accuracies per stage & group ===
+      group_1 group_2 group_3 group_4
+Stage                                
+1      72.88%    nan%    nan%    nan%
+2      82.81%  47.57%    nan%    nan%
+3      82.08%  49.25%  68.00%    nan%
+4      69.81%  47.94%  68.00%  83.66%
+
+=== iCaRL Interpretability: Drift vs Forgetting ===
+  from_to  param_drift  distill_loss  delta_acc
+0     1→2     7.025989     35.700325  -0.095144
+1     1→3     9.031317     52.073387  -0.021209
+2     2→3     4.966096      6.127798  -0.227103
+3     1→4     9.297355     57.026020   0.035877
+4     2→4     5.567279      7.540477  -0.007477
+5     3→4     2.283744      1.368736   0.000000
+
+Correlation (param drift vs ΔAcc):   0.2421
+Correlation (distill loss vs ΔAcc):   0.3779
+
+
+Replay-based Methods (a.k.a. Experience Replay): A-GEM (Average Gradient Episodic Memory)
+
+=== Test accuracies per stage & group ===
+      group_1 group_2 group_3 group_4
+Stage                                
+1      72.86%    nan%    nan%    nan%
+2      73.80%  49.63%    nan%    nan%
+3      80.06%  49.91%  68.00%    nan%
+4      83.35%  49.53%  68.00%  78.48%
+
+=== A-GEM Interpretability: Cosine Sim vs Forgetting ===
+  from_to   cos_sim  delta_acc
+0     1→2 -0.846356  -0.049950
+1     1→3 -0.180219  -0.080476
+2     2→3 -0.294312   0.005607
+3     1→4  0.608224  -0.097522
+4     2→4 -0.476724   0.016822
+5     3→4 -0.628591   0.000000
+
+Correlation (cosine similarity vs ΔAcc): -0.6079
+
+=== A-GEM Interpretability: Param Drift vs Forgetting ===
+  from_to  param_drift  delta_acc
+0     1→2     7.674234  -0.049950
+1     1→3     9.632319  -0.080476
+2     2→3     5.137197   0.005607
+3     1→4    10.177646  -0.097522
+4     2→4     5.789945   0.016822
+5     3→4     2.109867   0.000000
+
+Correlation (param drift vs ΔAcc): -0.8663
+
+Hybrid: Meta-Experience Replay (MER)
+
+=== Test accuracies per stage & group ===
+      group_1 group_2 group_3 group_4
+Stage                                
+1      79.54%    nan%    nan%    nan%
+2      79.33%   5.61%    nan%    nan%
+3      79.41%  20.28%   0.00%    nan%
+4      79.62%  21.78%  68.00%  27.69%
+
+=== MER Interpretability: Meta-Drift vs Forgetting ===
+  from_to  meta_drift  delta_acc
+0     1→2    0.167610  -0.018236
+1     1→3    0.371546  -0.017443
+2     2→3    0.162565  -0.146729
+3     1→4    0.696586  -0.017245
+4     2→4    0.453386  -0.146729
+5     3→4    0.164472  -0.680000
+
+Correlation (meta_drift vs ΔAcc): 0.4363
+
+Param Drift vs Forgetting ===
+  from_to  param_drift  delta_acc
+0     1→2     0.409402  -0.018236
+1     1→3     0.609546  -0.017443
+2     2→3     0.403193  -0.146729
+3     1→4     0.834617  -0.017245
+4     2→4     0.673339  -0.146729
+5     3→4     0.405551  -0.680000
+
+Correlation (param drift vs ΔAcc): 0.4513
+
+Hybrid: CoPE
+
+=== Test accuracies per stage & group ===
+      group_1 group_2  group_3 group_4
+Stage                                 
+1      69.39%    nan%     nan%    nan%
+2      43.58%  77.24%     nan%    nan%
+3      29.93%  23.69%  100.00%    nan%
+4      84.17%  24.98%   70.83%  78.78%
+
+=== CoPE: Param Drift vs Forgetting ===
+   from_to  param_drift  delta_acc
+0  1.0→2.0   214.918384   0.152135
+1  1.0→3.0   475.515659   0.336340
+2  2.0→3.0   284.320540   0.541935
+3  1.0→4.0   691.005168  -0.254961
+4  2.0→4.0   490.250261   0.532719
+5  3.0→4.0   250.576836   0.291667
+Correlation: -0.5044
+
+=== CoPE: CoPE‐Shift vs Forgetting ===
+   from_to  cope_shift  delta_acc
+0  1.0→2.0    0.292325   0.152135
+1  1.0→3.0    0.548116   0.336340
+2  2.0→3.0    0.432877   0.541935
+3  1.0→4.0    0.568473  -0.254961
+4  2.0→4.0    0.475173   0.532719
+5  3.0→4.0    0.193288   0.291667
+Correlation: -0.1891

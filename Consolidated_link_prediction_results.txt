@@ -1,0 +1,137 @@
+Link Prediction:
+Task Definitions • Task 1 (AND/OR): Recover wiring among only the AND/OR gates. We take all observed edges between nodes labeled “and” or “or” as positives, and randomly sample an equal number of non‐existing pairs among those same nodes as negatives. This becomes our first link‐prediction problem. • Task 2 (NAND/NOR): Same recipe, but now only for the NAND/NOR subset. We ask the model to learn the connectivity rules in this logic family. • Task 3 (XOR/XNOR): Shift to a different logical regime—exclusive‐OR style gates—and relearn which pairs should or shouldn’t be wired. • Task 4 (BUF/NOT): Finally, the buffer‐inverter domain, again sampling positive and negative pairs just among BUF/NOT nodes.
+Each stage teaches the same model a new “connectivity regime” defined by that gate‐type subgraph, and we track how well it retains the earlier wiring knowledge.
+
+Parameter Regularization: EWC
+
+=== Link‐Prediction Acc. per Stage ===
+       task_1  task_2  task_3  task_4
+Stage                                
+1      69.34%    nan%    nan%    nan%
+2      64.31%  64.32%    nan%    nan%
+3      68.19%  68.23%  68.21%    nan%
+4      73.21%  73.25%  73.25%  73.24%
+
+=== Dashboard: Drift vs Forgetting ===
+  from_to  param_drift  ewc_drift  delta_acc
+0     1→2     0.861579   0.000036   0.050262
+1     1→3     1.389111   0.000107   0.011492
+2     2→3     0.687071   0.000026  -0.039058
+3     1→4     1.765522   0.000169  -0.038701
+4     2→4     1.211488   0.000094  -0.089307
+5     3→4     0.586988   0.000006  -0.050338
+
+Correlation (param drift vs ΔAcc): -0.0445
+Correlation (EWC drift vs ΔAcc):   -0.1212
+
+
+
+Parameter Regularization: SI
+=== Link‐Pred Accuracies per Stage ===
+       task_1  task_2  task_3  task_4
+Stage                                
+1      72.21%    nan%    nan%    nan%
+2      70.43%  70.46%    nan%    nan%
+3      76.53%  76.58%  76.56%    nan%
+4      77.66%  77.67%  77.66%  77.70%
+
+=== SI Dashboard: Drift vs Forgetting ===
+  from_to  param_drift  si_drift  delta_acc
+0     1→2     0.705804 -0.000162   0.017781
+1     1→3     1.118743 -0.000368  -0.043248
+2     2→3     0.616743 -0.000009  -0.061201
+3     1→4     1.289030 -0.000289  -0.054493
+4     2→4     0.961438 -0.000121  -0.072131
+5     3→4     0.461007 -0.000008  -0.010967
+
+Corr(param drift vs ΔAcc): -0.4727
+Corr(si drift vs ΔAcc):    0.0956
+
+
+Replay-based Methods (a.k.a. Experience Replay):iCaRL (Incremental Classifier and Representation Learning)
+task1   task2   task3   task4
+Stage                                
+1      64.75%    nan%    nan%    nan%
+2      64.12%  75.00%    nan%    nan%
+3      65.38%  75.00%  75.00%    nan%
+4      63.60%  50.00%  75.00%  61.32%
+  task        pd         dl        da
+0  1→2  0.579191   1.713462  0.006276
+1  1→3  0.732453   5.899275 -0.006276
+2  2→3  0.286810   1.104511  0.000000
+3  1→4  0.888302  10.390121  0.011506
+4  2→4  0.640788   3.233203  0.250000
+5  3→4  0.395992   0.510963  0.000000
+
+
+Replay-based Methods (a.k.a. Experience Replay): A-GEM (Average Gradient Episodic Memory)
+
+=== Accuracies per stage & group ===
+      group_1 group_2 group_3 group_4
+Stage                                
+1      72.80%    nan%    nan%    nan%
+2      72.07%  49.63%    nan%    nan%
+3      57.34%  71.40%  68.00%    nan%
+4      70.55%  45.98%  68.00%  83.69%
+
+=== A-GEM Interpretability: CosineSim / ParamDrift vs Forgetting ===
+  from_to   cos_sim  param_drift  delta_acc
+0     1→2 -0.902999     7.443749   0.007334
+1     1→3 -0.141036     9.373952   0.154609
+2     2→3 -0.198858     5.307265  -0.217757
+3     1→4  0.605471     9.848869   0.022597
+4     2→4 -0.495798     5.867478   0.036449
+5     3→4 -0.598094     2.042054   0.000000
+
+Corr(cosine-sim vs ΔAcc):    0.0364
+Corr(param-drift vs ΔAcc):   0.4355
+
+Hybrid: Meta-Experience Replay (MER)
+
+=== Link‐Pred Accuracies ===
+       task_1  task_2  task_3  task_4
+Stage                                
+1      61.28%    nan%    nan%    nan%
+2      67.35%  51.19%    nan%    nan%
+3      66.63%  62.70%  62.50%    nan%
+4      66.17%  63.49%  75.00%  63.06%
+
+=== MER Dashboard: Meta-Drift vs Forgetting ===
+  from_to  meta_drift  delta_acc
+0     1→2    0.023834  -0.060762
+1     1→3    0.168855  -0.053553
+2     2→3    0.125834  -0.115079
+3     1→4    0.781215  -0.048919
+4     2→4    0.712499  -0.123016
+5     3→4    0.466599  -0.125000
+Corr(meta_drift vs ΔAcc): -0.1566
+
+Hybrid: CoPE
+
+=== Test accuracies per stage & group ===
+      group_1 group_2  group_3 group_4
+Stage                                 
+1      69.49%    nan%     nan%    nan%
+2      43.56%  77.24%     nan%    nan%
+3      26.50%  36.13%  100.00%    nan%
+4      83.68%  26.45%   70.83%  78.76%
+
+=== CoPE: Param Drift vs Forgetting ===
+   from_to  param_drift  delta_acc
+0  1.0→2.0   216.323035   0.259371
+1  1.0→3.0   473.327640   0.429946
+2  2.0→3.0   276.692241   0.411060
+3  1.0→4.0   684.474915  -0.141912
+4  2.0→4.0   479.520423   0.507834
+5  3.0→4.0   244.168632   0.291667
+Correlation: -0.4961
+
+=== CoPE: CoPE‐Shift vs Forgetting ===
+   from_to  cope_shift  delta_acc
+0  1.0→2.0    0.339025   0.259371
+1  1.0→3.0    0.552581   0.429946
+2  2.0→3.0    0.397625   0.411060
+3  1.0→4.0    0.578128  -0.141912
+4  2.0→4.0    0.465723   0.507834
+5  3.0→4.0    0.193400   0.291667
+Correlation: -0.2426

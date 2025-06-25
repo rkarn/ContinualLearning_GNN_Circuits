@@ -43,6 +43,35 @@ We provide parameter-level explainability using:
 
 These metrics are correlated with accuracy drops to diagnose forgetting.
 
+
+The value of key-hyperparameters are:
+
+### Table: Hyperparameters shared across CL methods
+
+| **Hyperparameter**                | **Methods**                                     | **Value**                   |
+|----------------------------------|--------------------------------------------------|-----------------------------|
+| Hidden dimension                 | EWC, SI, iCaRL, A-GEM, MER, CoPE                | 64                          |
+| Epochs per task (fine-tune)      | EWC, SI, iCaRL, A-GEM, MER                      | 50                          |
+| Memory buffer size per task      | A-GEM, MER                                      | 200 graphs                  |
+| Optimizer                        | EWC, SI                                         | Adam (lr=1e-2)              |
+|                                  | iCaRL, A-GEM                                    | Adam (lr=1e-3)              |
+|                                  | MER                                             | SGD (meta lr=1e-2)          |
+|                                  | CoPE                                            | Adam (pre:5e-4; cls:5e-3)   |
+| Regularization strength (λ)      | EWC, SI                                         | 1000.0                      |
+| Temperature (T)                  | iCaRL                                           | 2.0                         |
+| Distillation weight (β)          | iCaRL                                           | 1.0                         |
+| Exemplars per class              | iCaRL                                           | 20 nodes                    |
+| Memory batch size                | A-GEM                                           | 100 graphs                  |
+| Inner-loop learning rate (α)     | MER                                             | 0.005                       |
+| Meta-learning rate               | MER                                             | 0.01                        |
+| MER batch size                   | MER                                             | 64                          |
+| Dropout (in CoPE encoder)        | CoPE                                            | 0.4                         |
+| Mask ratio (feature drop)        | CoPE                                            | 0.2                         |
+| Pretext epochs                   | CoPE                                            | 30                          |
+| Classifier epochs                | CoPE                                            | 40                          |
+
+
+
 ## 📦 Setup
 
 ```bash

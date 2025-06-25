@@ -1,0 +1,150 @@
+Graph Classification:
+Task Definitions: What are the tasks?
+
+We want four successive binary problems, each asking “Is this circuit in size-quartile q or not?” for q=0,1,2,3.
+Quartile 0: the smallest 25% of your circuits by node-count.
+Quartile 1: next 25% (25–50% smallest).
+Quartile 2: next 25% (50–75%).
+Quartile 3: largest 25% (75–100%).
+Concretely, at Task 1 you train a GCN to separate the 0th-quartile circuits (positive class) from all others (negative class). At Task 2, you freeze in the EWC sense and train to separate 1st-quartile vs rest, and so on through Task 4.
+
+How did we create them?
+
+After parsing the CSV and building one DGL graph per circuit_id, we computed the number of nodes in each graph.
+We took those counts and found the 25th, 50th, and 75th percentiles.
+Each graph got a quartile label 0–3 via np.digitize(node_counts, quartile_thresholds).
+For each quartile q, we gathered the indices of all graphs with label==q (positives) and label≠q (negatives).
+We then split those positives/negatives into an 80/20 train/test stratified split.
+
+Parameter Regularization: EWC
+
+task_1  task_2  task_3  task_4
+Stage                                
+1      83.33%    nan%    nan%    nan%
+2      66.67%  80.00%    nan%    nan%
+3      66.67%  80.00%  66.67%    nan%
+4      66.67%  80.00%  66.67%  66.67%
+  from_to        pd        ed        da
+0     1→2  0.148259  0.000006  0.166667
+1     1→3  0.302645  0.000017  0.166667
+2     2→3  0.160192  0.000001  0.000000
+3     1→4  0.457295  0.000025  0.166667
+4     2→4  0.319695  0.000004  0.000000
+5     3→4  0.161410  0.000001  0.000000
+Corr(pd vs da): 0.3940667540923494
+Corr(ed vs da): 0.7726696732237125
+
+
+
+Parameter Regularization: SI
+=== Accuracies per stage & task ===
+       task_1  task_2  task_3  task_4
+Stage                                
+1      83.33%    nan%    nan%    nan%
+2      83.33%  80.00%    nan%    nan%
+3      66.67%  80.00%  66.67%    nan%
+4      66.67%  80.00%  66.67%  66.67%
+
+=== SI Dashboard: Drift vs Forgetting ===
+  from_to  param_drift      si_drift  delta_acc
+0     1→2     0.150303  3.557388e-07   0.000000
+1     1→3     0.303091  1.568814e-06   0.166667
+2     2→3     0.159126  3.254309e-06   0.000000
+3     1→4     0.448460  3.625209e-06   0.166667
+4     2→4     0.309821  1.203106e-05   0.000000
+5     3→4     0.154001  4.799104e-06   0.000000
+Corr(param drift vs ΔAcc): 0.7793
+Corr(SI drift vs ΔAcc):    -0.3155
+
+
+
+Replay-based Methods (a.k.a. Experience Replay):iCaRL (Incremental Classifier and Representation Learning)
+
+=== Accuracies per stage & task ===
+        task_1  task_2  task_3  task_4
+Stage                                 
+1      100.00%    nan%    nan%    nan%
+2       66.67%  80.00%    nan%    nan%
+3       66.67%  80.00%  66.67%    nan%
+4       66.67%  80.00%  66.67%  66.67%
+
+=== iCaRL Dashboard: Drift vs Forgetting ===
+  from_to  param_drift  distill_loss  delta_acc
+0     1→2     1.198720      0.096607   0.333333
+1     1→3     1.731123     35.113602   0.333333
+2     2→3     0.949856      0.921750   0.000000
+3     1→4     1.899203     55.708729   0.333333
+4     2→4     1.380369      5.530960   0.000000
+5     3→4     0.788789      1.880792   0.000000
+
+Corr(param drift vs ΔAcc): 0.7193
+Corr(distill loss vs ΔAcc): 0.6453
+
+
+
+Replay-based Methods (a.k.a. Experience Replay): A-GEM (Average Gradient Episodic Memory)
+
+=== Accuracies per stage & task ===
+       task_1  task_2  task_3  task_4
+Stage                                
+1      33.33%    nan%    nan%    nan%
+2      16.67%  20.00%    nan%    nan%
+3       0.00%  20.00%  33.33%    nan%
+4      16.67%  20.00%  50.00%  50.00%
+
+
+=== A-GEM Dashboard: Drift vs Forgetting ===
+  from_to  param_drift   cos_sim  delta_acc
+0     1→2     0.153880  0.832518   0.166667
+1     1→3     0.310674  0.725872   0.333333
+2     2→3     0.162213  0.948405   0.000000
+3     1→4     0.463285  0.708970   0.166667
+4     2→4     0.319694  0.938780   0.000000
+5     3→4     0.160056  0.988932  -0.166667
+
+Corr(param_drift vs ΔAcc): 0.4475
+Corr(cos_sim vs ΔAcc):       -0.9007
+
+
+Hybrid: Meta-Experience Replay (MER)
+
+=== Accuracies per stage & task ===
+        task_1  task_2  task_3  task_4
+Stage                                 
+1       50.00%    nan%    nan%    nan%
+2       83.33%  80.00%    nan%    nan%
+3      100.00%  80.00%  66.67%    nan%
+4       66.67%  80.00%  66.67%  66.67%
+
+=== A-GEM Dashboard: Drift vs Forgetting ===
+  from_to  param_drift  delta_acc
+0     1→2     0.015026  -0.333333
+1     1→3     0.047044  -0.500000
+2     2→3     0.037385   0.000000
+3     1→4     0.077218  -0.166667
+4     2→4     0.068202   0.000000
+5     3→4     0.030860   0.000000
+
+Corr(param_drift vs ΔAcc): 0.1849
+
+Hybrid: CoPE
+
+=== Test accuracies per stage & task ===
+       task_1  task_2  task_3  task_4
+Stage                                
+1      66.67%    nan%    nan%    nan%
+2      33.33%  60.00%    nan%    nan%
+3      66.67%  60.00%  66.67%    nan%
+4      33.33%  40.00%  50.00%  83.33%
+
+=== CoPE Interpretability: Drift vs Forgetting ===
+  from_to  param_drift  cope_shift  delta_acc
+0     1→2     5.262125    0.500679   0.333333
+1     1→3     6.789781    0.706511   0.000000
+2     2→3     5.925833    0.491760   0.000000
+3     1→4     7.381820    0.801193   0.333333
+4     2→4     6.967100    0.621501   0.200000
+5     3→4     4.392001    0.308419   0.166667
+
+Corr(param_drift vs ΔAcc): 0.0191
+Corr(CoPE_shift vs ΔAcc):  0.1441
