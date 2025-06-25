@@ -78,7 +78,10 @@ The value of key-hyperparameters are:
 # Create environment
 conda create -n circuit-cl python=3.9
 conda activate circuit-cl
-
+- Execute the `ISCAS85+EPFL_Parsing.ipynb` to create a graph dataset and dumpt it into a csv file.
+- The csv file is then used by each of the script in `Node Classification` , `Link Prediction`, and `Graph Classification` folders.
+- Each script is independent and could run by python <file-name.py>. e.g. python parameter_regularization_ewc.py
+- Make sure the python script and the generated csv file is in the same folder.
 # Install dependencies
 - DGL
 - Pytorch
