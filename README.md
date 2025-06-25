@@ -27,11 +27,11 @@ The following CL algorithms are implemented using a fixed GNN backbone (Graph Co
 
 ### 🔁 Replay-Based
 - iCaRL (Incremental Classifier and Representation Learning)
-- A-GEM (Average Gradient Episodic Memory)
+- A-GEM (Average Gradient Episodic Memory) 
 
 ### ⚡ Hybrid
-- Meta-Experience Replay (MER)
-- CoPE (Contrastive Continual Pretraining)
+- Meta-Experience Replay (MER): Combines experience replay with meta-gradient optimization.
+- CoPE (Contrastive Continual Pretraining): Combines continual learning with self-supervised pretraining.
 
 ## 🔍 Explainability
 

@@ -1,0 +1,21 @@
+Parsing the Netlist
+-adding the circuit id to enable the graph classification
+
+Each row in all_circuits_features_graphclass.csv has a circuit_id column equal to the filename (minus the “.v”), which you can use to group nodes into graphs for your graph‐classification experiments.
+
+What are the tasks?
+
+We want four successive binary problems, each asking “Is this circuit in size-quartile q or not?” for q=0,1,2,3.
+Quartile 0: the smallest 25% of your circuits by node-count.
+Quartile 1: next 25% (25–50% smallest).
+Quartile 2: next 25% (50–75%).
+Quartile 3: largest 25% (75–100%).
+Concretely, at Task 1 you train a GCN to separate the 0th-quartile circuits (positive class) from all others (negative class). At Task 2, you freeze in the EWC sense and train to separate 1st-quartile vs rest, and so on through Task 4.
+
+How did we create them?
+
+After parsing the CSV and building one DGL graph per circuit_id, we computed the number of nodes in each graph.
+We took those counts and found the 25th, 50th, and 75th percentiles.
+Each graph got a quartile label 0–3 via np.digitize(node_counts, quartile_thresholds).
+For each quartile q, we gathered the indices of all graphs with label==q (positives) and label≠q (negatives).
+We then split those positives/negatives into an 80/20 train/test stratified split.
