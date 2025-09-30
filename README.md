@@ -12,8 +12,9 @@ This project introduces a benchmark and interpretable continual learning framewo
 ## 🧪 Tasks Covered
 
 - **Node Classification:** Predict gate type for each node (e.g., AND, OR).
-- **Graph Classification:** Classify netlist graphs by functional type (e.g., control vs arithmetic).
 - **Link Prediction:** Predict whether a wire exists between two gates.
+- **Graph Classification:** Classify netlist graphs by functional type (e.g., control vs arithmetic). Please locate to `SupplementaryMaterial_GraphClassification.pdf` file in `Graph Classification` folder
+
 
 Each task is designed under a **continual learning setting** with 4 binary tasks constructed over disjoint gate-type pairs.
 
