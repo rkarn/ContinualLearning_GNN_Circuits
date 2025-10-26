@@ -72,6 +72,13 @@ The value of key-hyperparameters are:
 | Classifier epochs                | CoPE                                            | 40                          |
 
 
+## Results:
+- The outcome of the scripts in `Node classification` folder is given in `Consolidated_graph_classification_results.txt`.
+- The outcome of the scripts in `Link Prediction` folder is given in `Consolidated_link_prediction_results.txt`.
+- The outcome of the scripts in `Graph Classification` folder is given in `Consolidated_graph_classification_results.txt`.
+
+## Summary: 
+Due to the `static` GNN architecture, some of the tasks has gone into catastrophic forgetting. We will explore the use of `dynamic nueral architecure` GNNs in future work. 
 
 ## 📦 Setup
 
