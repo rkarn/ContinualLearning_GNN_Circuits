@@ -1,6 +1,6 @@
 # Continual Learning for Circuit Netlist Graphs using Graph Neural Networks
 
-This repository contains code and experiments for our research on applying continual (lifelong) learning methods to gate-level circuit netlists modeled as graphs. We explore how state-of-the-art continual learning (CL) algorithms help mitigate catastrophic forgetting in GNNs across various EDA-relevant tasks such as node classification, graph classification, and link prediction.
+This repository contains code and experiments for our research on applying continual (lifelong) learning methods to gate-level circuit netlists modeled as graphs. We explore how state-of-the-art continual learning (CL) algorithms help mitigate catastrophic forgetting in GNNs across various EDA-relevant tasks such as node classification, graph classification, and link prediction. `We use static GNN architecture, i.e the same neural architeecture has been used across all the tasks.` 
 
 ## 🧠 Motivation
 
